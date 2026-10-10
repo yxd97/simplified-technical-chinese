@@ -111,6 +111,8 @@ description: 用简明技术中文（STC）写或改写中文技术内容：操�
    python3 tools/check.py 文件.md
    ```
 
+   如果 `python3` 无法运行，改用 `python`。Windows 上的 `python3` 可能只是 Microsoft Store 的安装入口。
+
    聊天回答这类没有编号步骤的内容，加 `--kind 描述`。
 
 5. 修复全部【必须】级别的发现。【建议】级别的按判断处理。

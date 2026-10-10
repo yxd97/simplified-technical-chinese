@@ -1,6 +1,7 @@
 """检查脚本的回归测试。运行：python3 -m unittest discover tests"""
 
 import os
+import subprocess
 import sys
 import unittest
 
@@ -287,6 +288,16 @@ class TestCli(unittest.TestCase):
         after = os.path.join(ROOT, "examples", "after.md")
         self.assertEqual(check.main(["--strict", "--quiet", before]), 1)
         self.assertEqual(check.main(["--strict", "--quiet", after]), 0)
+
+    def test_stdio_is_utf8_when_locale_encoding_is_not(self):
+        # Windows 上标准输入输出接管道时，编码是系统代码页，例如 cp1252
+        env = dict(os.environ, PYTHONIOENCODING="cp1252")
+        result = subprocess.run(
+            [sys.executable, os.path.join(ROOT, "tools", "check.py"), "-"],
+            input="对配置文件进行修改。\n".encode("utf-8"),
+            capture_output=True, env=env, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
+        self.assertIn("[1.4]", result.stdout.decode("utf-8"))
 
 
 if __name__ == "__main__":

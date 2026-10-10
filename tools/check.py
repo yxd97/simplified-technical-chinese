@@ -613,6 +613,12 @@ class Checker:
 # ---------------------------------------------------------------------------
 
 def main(argv: Optional[List[str]] = None) -> int:
+    # Windows 上标准输入输出接管道时，编码是系统代码页（例如 cp1252），读写中文会出错。
+    # 调用方替换成 StringIO 这类没有 reconfigure 的流时，保持原样。
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
+
     parser = argparse.ArgumentParser(description="简明技术中文检查脚本")
     parser.add_argument("files", nargs="+", help="要检查的文件；用 - 表示标准输入")
     parser.add_argument("--strict", action="store_true", help="有【必须】级别的发现时退出码为 1")
